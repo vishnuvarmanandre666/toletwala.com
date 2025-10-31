@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>ToletWala - Property Listings</title>
+    <meta name="description" content="Find and post property listings - tolet, apartment, land and coliving spaces" />
+    <!-- Add these meta tags for API endpoints -->
+    <meta name="api-base" content="/api" />
+    <meta name="upload-path" content="/uploads" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Auth form styles */
+        .auth-tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 20px;
+            background: #eef2f7;
+            padding: 4px;
+            border-radius: 8px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .auth-tab.active {
+            background: #fff;
+            color: var(--accent);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .auth-input {
+            background: #f8fafc;
+            border: 1px solid #e3e8ef;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin: 6px 0 15px;
+            transition: all 0.2s;
+        }
+        .auth-input:focus {
+            background: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(30,136,229,0.1);
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        :root{
+            --accent:#1e88e5; --muted:#666; --bg:#f7f9fc;
+            --card:#fff; --danger:#e53935;
+        }
+        *{box-sizing:border-box;font-family:Inter,Segoe UI,Roboto,"Helvetica Neue",Arial}
+        body{margin:0;background:var(--bg);color:#111}
+        header{background:linear-gradient(90deg,var(--accent),#4fc3f7);color:#fff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
+        .brand{display:flex;gap:12px;align-items:center}
+        .logo{width:44px;height:44px;background:#fff3;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+        nav{display:flex;gap:8px;align-items:center}
+        button, input, select, textarea{font:inherit}
+        .btn{background:#fff;color:var(--accent);border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+        .btn.primary{background:#fff;color:var(--accent);font-weight:600}
+        .container{max-width:1100px;margin:18px auto;padding:0 16px}
+        .grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
+        .card{background:var(--card);padding:14px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+        h2{margin:0 0 12px 0}
+        .small{font-size:13px;color:var(--muted)}
+        .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+        .tab{padding:8px 10px;border-radius:8px;background:#e7f3ff;color:var(--accent);cursor:pointer}
+        .tab.active{background:var(--accent);color:#fff}
+        form .row{display:flex;gap:8px}
+        form input, form select, form textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #e3e6ee}
+        .listings{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+        .listing{padding:10px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfeff);cursor:pointer;border:1px solid #f0f3f8}
+        .listing h3{margin:0 0 6px 0;font-size:16px}
+        .muted{color:var(--muted);font-size:13px}
+        .actions{display:flex;gap:6px;margin-top:8px}
+        .btn.ghost{background:transparent;border:1px solid #e3e6ee;color:var(--muted)}
+        .search{display:flex;gap:8px;margin-bottom:8px}
+        .search input{flex:1}
+        footer{padding:18px;text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
+        .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:50}
+        .modal{width:720px;max-width:95%;background:var(--card);padding:16px;border-radius:10px}
+        .row-between{display:flex;justify-content:space-between;align-items:center}
+        .chip{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef6ff;color:var(--accent);font-weight:600;font-size:13px}
+        .danger{background:var(--danger);color:#fff}
+        .small-muted{font-size:12px;color:#8b98a8}
+        .img-preview{width:100%;height:140px;object-fit:cover;border-radius:6px;margin-bottom:8px;background:#f3f6fa;display:block}
+        @media (max-width:820px){.grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <div class="logo">TW</div>
+            <div>
+                <div style="font-weight:700">ToletWala</div>
+                <div class="small" style="margin-top:2px">Dynamic listings — tolet, apartment, land, coliving</div>
+            </div>
+        </div>
+        <nav id="navArea">
+            <!-- Filled by JS -->
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="grid">
+            <aside>
+                <div class="card">
+                    <h2>Categories</h2>
+                    <div class="tabs" id="categoryTabs">
+                        <!-- category tabs -->
+                    </div>
+
+                    <div style="margin-top:12px">
+                        <div class="small-muted">Filter & Search</div>
+                        <div class="search" style="margin-top:8px">
+                            <input id="searchInput" placeholder="Search title, location..." />
+                            <button class="btn ghost" id="clearSearch">Clear</button>
+                        </div>
+                        <div style="margin-top:10px">
+                            <label class="small-muted">Sort</label>
+                            <select id="sortSelect" style="width:100%;margin-top:6px">
+                                <option value="new">Newest</option>
+                                <option value="price_asc">Price ↑</option>
+                                <option value="price_desc">Price ↓</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height:12px"></div>
+
+                <div class="card" id="authCard">
+                    <!-- Auth or create listing area injected by JS -->
+                </div>
+
+            </aside>
+
+            <section>
+                <div class="card">
+                    <div class="row-between" style="margin-bottom:12px">
+                        <h2>Listings</h2>
+                        <div class="small">Dynamic local-demo. Data stored in browser storage.</div>
+                    </div>
+
+                    <div id="listingsWrap">
+                        <div class="listings" id="listings"></div>
+                        <div id="emptyMsg" class="small-muted" style="display:none;margin-top:8px">No listings found.</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer>Built with localStorage • Demo only • No server</footer>
+    </main>
+
+    <!-- Modal container -->
+    <div id="modalRoot" style="display:none"></div>
+
+    <script>
+        // Simple SPA with localStorage persistence
+        const CATEGORIES = [
+            {id:'tolet', label:'Tolet Listing'},
+            {id:'apartment', label:'Apartment Selling'},
+            {id:'land', label:'Lands & Plots'},
+            {id:'coliving', label:'Co-living'}
+        ];
+
+        // Storage keys
+        const USERS_KEY = 'tw_users';
+        const USER_KEY = 'tw_currentUser';
+        const LISTINGS_KEY = 'tw_listings';
+
+        // State
+        let state = {
+            currentUser: null,
+            filterCategory: null,
+            query: '',
+            sort: 'new',
+            editListingId: null
+        };
+
+        // Utilities
+        const el = id => document.getElementById(id);
+        const nowId = ()=>Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+
+        // Storage helpers
+        function loadUsers(){ return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
+        function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+        function loadListings(){ return JSON.parse(localStorage.getItem(LISTINGS_KEY) || '[]'); }
+        function saveListings(l){ localStorage.setItem(LISTINGS_KEY, JSON.stringify(l)); }
+        function setCurrentUser(u){ state.currentUser = u; localStorage.setItem(USER_KEY, JSON.stringify(u)); renderNav(); renderAuthArea(); }
+        function loadCurrentUser(){ const u = JSON.parse(localStorage.getItem(USER_KEY) || 'null'); state.currentUser = u; return u; }
+
+        // Init
+        (function init(){
+            loadCurrentUser();
+            renderCategories();
+            renderNav();
+            renderAuthArea();
+            renderListings();
+            attachControls();
+        })();
+
+        // Render Nav
+        function renderNav(){
+            const nav = el('navArea');
+            nav.innerHTML = '';
+            if(state.currentUser){
+                const userName = document.createElement('div');
+                userName.className = 'small-muted';
+                userName.textContent = 'Signed in as ' + state.currentUser.username;
+                nav.appendChild(userName);
+
+                const createBtn = document.createElement('button');
+                createBtn.className = 'btn';
+                createBtn.textContent = 'Create Listing';
+                createBtn.onclick = ()=> openCreateForm();
+                nav.appendChild(createBtn);
+
+                const outBtn = document.createElement('button');
+                outBtn.className = 'btn ghost';
+                outBtn.textContent = 'Sign out';
+                outBtn.onclick = signOut;
+                nav.appendChild(outBtn);
+            } else {
+                const inBtn = document.createElement('button');
+                inBtn.className = 'btn primary';
+                inBtn.textContent = 'Sign in / Sign up';
+                inBtn.onclick = ()=> openAuthModal();
+                nav.appendChild(inBtn);
+            }
+        }
+
+        // Categories
+        function renderCategories(){
+            const wrap = el('categoryTabs');
+            wrap.innerHTML = '';
+            const all = document.createElement('div');
+            all.className = 'tab ' + (state.filterCategory===null ? 'active':'');
+            all.textContent = 'All';
+            all.onclick = ()=>{ state.filterCategory=null; renderCategories(); renderListings(); };
+            wrap.appendChild(all);
+
+            CATEGORIES.forEach(c=>{
+                const d = document.createElement('div');
+                d.className = 'tab ' + (state.filterCategory===c.id ? 'active':'');
+                d.textContent = c.label;
+                d.onclick = ()=>{ state.filterCategory = c.id; renderCategories(); renderListings(); };
+                wrap.appendChild(d);
+            });
+        }
+
+        // Auth area in sidebar (or create listing form)
+        function renderAuthArea(){
+            const wrap = el('authCard');
+            wrap.innerHTML = '';
+            if(state.currentUser){
+                const h = document.createElement('div');
+                h.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700">'+state.currentUser.username+'</div><div class="small-muted">Member</div></div><div class="chip">User</div></div>';
+                wrap.appendChild(h);
+
+                const btnWrap = document.createElement('div');
+                btnWrap.style.marginTop='12px';
+                const createBtn = document.createElement('button');
+                createBtn.className='btn primary';
+                createBtn.textContent='Create New Listing';
+                createBtn.onclick = ()=> openCreateForm();
+                btnWrap.appendChild(createBtn);
+
+                const manageBtn = document.createElement('button');
+                manageBtn.className='btn ghost';
+                manageBtn.style.marginLeft='8px';
+                manageBtn.textContent='My Listings';
+                manageBtn.onclick = ()=> showMyListings();
+                btnWrap.appendChild(manageBtn);
+
+                const outBtn = document.createElement('button');
+                outBtn.className='btn ghost';
+                outBtn.style.marginLeft='8px';
+                outBtn.textContent='Sign out';
+                outBtn.onclick = signOut;
+                btnWrap.appendChild(outBtn);
+
+                wrap.appendChild(btnWrap);
+            } else {
+                const h = document.createElement('div');
+                h.innerHTML = '<div style="font-weight:700">Welcome</div><div class="small-muted" style="margin-top:6px">Sign in or create an account to post and manage listings.</div>';
+                wrap.appendChild(h);
+
+                const btn = document.createElement('button');
+                btn.className='btn primary';
+                btn.style.marginTop='12px';
+                btn.textContent='Sign in / Sign up';
+                btn.onclick = ()=> openAuthModal();
+                wrap.appendChild(btn);
+            }
+        }
+
+        // Attach search/sort controls
+        function attachControls(){
+            el('searchInput').addEventListener('input', e=>{ state.query = e.target.value.trim(); renderListings(); });
+            el('clearSearch').addEventListener('click', ()=>{ el('searchInput').value=''; state.query=''; renderListings(); });
+            el('sortSelect').addEventListener('change', e=>{ state.sort = e.target.value; renderListings(); });
+        }
+
+        // Render listings
+        function renderListings(list=null){
+            const listings = list || loadListings();
+            const container = el('listings');
+            container.innerHTML = '';
+
+            // filter
+            let filtered = listings.slice();
+            if(state.filterCategory) filtered = filtered.filter(l=>l.category===state.filterCategory);
+            if(state.query) {
+                const q = state.query.toLowerCase();
+                filtered = filtered.filter(l=> (l.title+ ' '+ l.location + ' ' + l.description).toLowerCase().includes(q));
+            }
+
+            // sort
+            if(state.sort === 'new') filtered.sort((a,b)=>b.createdAt - a.createdAt);
+            if(state.sort === 'price_asc') filtered.sort((a,b)=> (a.price||0) - (b.price||0));
+            if(state.sort === 'price_desc') filtered.sort((a,b)=> (b.price||0) - (a.price||0));
+
+            if(filtered.length === 0){
+                el('emptyMsg').style.display = 'block';
+            } else {
+                el('emptyMsg').style.display = 'none';
+            }
+
+            filtered.forEach(item=>{
+                const card = document.createElement('div');
+                card.className = 'listing card';
+                card.onclick = ()=> openDetail(item.id);
+
+                const img = document.createElement('img');
+                img.className = 'img-preview';
+                img.src = item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360"><rect width="100%" height="100%" fill="%23f3f6fa"/><text x="50%" y="50%" fill="%238b98a8" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24">No image</text></svg>';
+                card.appendChild(img);
+
+                const title = document.createElement('h3');
+                title.textContent = item.title || '(No title)';
+                card.appendChild(title);
+
+                const meta = document.createElement('div');
+                meta.className = 'muted';
+                meta.textContent = CATEGORIES.find(c=>c.id===item.category)?.label + ' • ' + (item.location || 'Unknown');
+                card.appendChild(meta);
+
+                const price = document.createElement('div');
+                price.style.marginTop='8px';
+                price.innerHTML = '<strong>' + (item.price ? '৳ ' + item.price : 'Price N/A') + '</strong>';
+                card.appendChild(price);
+
+                const actions = document.createElement('div');
+                actions.className = 'actions';
+                actions.onclick = (e)=> e.stopPropagation();
+
+                const viewBtn = document.createElement('button');
+                viewBtn.className = 'btn ghost';
+                viewBtn.textContent = 'View';
+                viewBtn.onclick = ()=> openDetail(item.id);
+                actions.appendChild(viewBtn);
+
+                if(state.currentUser && state.currentUser.username === item.owner){
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'btn';
+                    editBtn.textContent = 'Edit';
+                    editBtn.onclick = (e)=>{ e.stopPropagation(); openEditForm(item.id); };
+                    actions.appendChild(editBtn);
+
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'btn ghost';
+                    delBtn.textContent = 'Delete';
+                    delBtn.onclick = (e)=>{ e.stopPropagation(); deleteListing(item.id); };
+                    actions.appendChild(delBtn);
+                }
+
+                card.appendChild(actions);
+                container.appendChild(card);
+            });
+        }
+
+        // Auth modal
+        function openAuthModal(){
+            showModal(renderAuthModal);
+        }
+
+        function renderAuthModal(modal){
+            modal.innerHTML = '';
+            const top = document.createElement('div');
+            top.className='row-between';
+            top.innerHTML = '<div style="font-weight:700">Sign in / Sign up</div><div class="small-muted">Local demo</div>';
+            modal.appendChild(top);
+
+            const content = document.createElement('div');
+            content.style.marginTop='12px';
+            content.innerHTML = `
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <label class="small-muted">Username</label>
+                        <input id="authUser" placeholder="username" />
+                    </div>
+                    <div style="flex:1">
+                        <label class="small-muted">Password</label>
+                        <input id="authPass" type="password" placeholder="password" />
+                    </div>
+                </div>
+                <div style="margin-top:10px;display:flex;gap:8px">
+                    <button class="btn primary" id="signinBtn">Sign in</button>
+                    <button class="btn" id="signupBtn">Sign up</button>
+                </div>
+                <div class="small-muted" style="margin-top:8px">This demo stores user info in localStorage. Passwords are not secure — for demo only.</div>
+            `;
+            modal.appendChild(content);
+
+            modal.querySelector('#signinBtn').onclick = ()=> {
+                const u = modal.querySelector('#authUser').value.trim();
+                const p = modal.querySelector('#authPass').value;
+                if(!u || !p){ alert('Provide username and password'); return; }
+                const users = loadUsers();
+                const found = users.find(x=>x.username===u && x.password===p);
+                if(!found){ alert('Invalid credentials'); return; }
+                setCurrentUser({username:found.username});
+                closeModal();
+            };
+
+            modal.querySelector('#signupBtn').onclick = ()=> {
+                const u = modal.querySelector('#authUser').value.trim();
+                const p = modal.querySelector('#authPass').value;
+                if(!u || !p){ alert('Provide username and password'); return; }
+                const users = loadUsers();
+                if(users.find(x=>x.username===u)){ alert('Username taken'); return; }
+                users.push({username:u,password:p});
+                saveUsers(users);
+                setCurrentUser({username:u});
+                closeModal();
+            };
+        }
+
+        // Sign out
+        function signOut(){
+            localStorage.removeItem(USER_KEY);
+            state.currentUser = null;
+            renderNav();
+            renderAuthArea();
+        }
+
+        // Create / Edit listing
+        function openCreateForm(){
+            if(!state.currentUser){ alert('Please sign in first'); openAuthModal(); return; }
+            state.editListingId = null;
+            showModal(renderListingForm);
+        }
+
+        function openEditForm(id){
+            state.editListingId = id;
+            showModal(renderListingForm);
+        }
+
+        function renderListingForm(modal){
+            const editId = state.editListingId;
+            const listings = loadListings();
+            const item = editId ? listings.find(i=>i.id===editId) : null;
+
+            modal.innerHTML = '<div class="row-between"><div style="font-weight:700">'+(item?'Edit Listing':'Create Listing')+'</div><div class="small-muted">'+(item?('Owner: '+item.owner):('Posting as: '+state.currentUser.username))+'</div></div>';
+
+            const form = document.createElement('div');
+            form.style.marginTop='10px';
+            form.innerHTML = `
+                <label class="small-muted">Category</label>
+                <select id="fCategory">${CATEGORIES.map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}</select>
+
+                <label class="small-muted" style="margin-top:8px;display:block">Title</label>
+                <input id="fTitle" placeholder="Short title" />
+
+                <label class="small-muted" style="margin-top:8px;display:block">Location</label>
+                <input id="fLocation" placeholder="City, area" />
+
+                <label class="small-muted" style="margin-top:8px;display:block">Price (numeric)</label>
+                <input id="fPrice" placeholder="e.g. 15000" type="number" />
+
+                <label class="small-muted" style="margin-top:8px;display:block">Contact</label>
+                <input id="fContact" placeholder="Phone or email" />
+
+                <label class="small-muted" style="margin-top:8px;display:block">Images (comma separated URLs)</label>
+                <input id="fImages" placeholder="https://..., https://..." />
+
+                <label class="small-muted" style="margin-top:8px;display:block">Description</label>
+                <textarea id="fDesc" rows="4" placeholder="Describe the property"></textarea>
+
+                <div style="margin-top:10px;display:flex;gap:8px">
+                    <button class="btn primary" id="saveListing">Save</button>
+                    <button class="btn ghost" id="cancelListing">Cancel</button>
+                </div>
+            `;
+            modal.appendChild(form);
+
+            // Populate if edit
+            if(item){
+                modal.querySelector('#fCategory').value = item.category;
+                modal.querySelector('#fTitle').value = item.title;
+                modal.querySelector('#fLocation').value = item.location;
+                modal.querySelector('#fPrice').value = item.price || '';
+                modal.querySelector('#fContact').value = item.contact || '';
+                modal.querySelector('#fImages').value = item.images ? item.images.join(',') : '';
+                modal.querySelector('#fDesc').value = item.description || '';
+            }
+
+            modal.querySelector('#cancelListing').onclick = closeModal;
+            modal.querySelector('#saveListing').onclick = ()=>{
+                const data = {
+                    category: modal.querySelector('#fCategory').value,
+                    title: modal.querySelector('#fTitle').value.trim(),
+                    location: modal.querySelector('#fLocation').value.trim(),
+                    price: Number(modal.querySelector('#fPrice').value) || null,
+                    contact: modal.querySelector('#fContact').value.trim(),
+                    images: modal.querySelector('#fImages').value.split(',').map(s=>s.trim()).filter(Boolean),
+                    description: modal.querySelector('#fDesc').value.trim(),
+                };
+                if(!data.title){ alert('Title required'); return; }
+                const list = loadListings();
+                if(item){
+                    // update
+                    const idx = list.findIndex(x=>x.id===item.id);
+                    list[idx] = {...list[idx], ...data, updatedAt:Date.now()};
+                    saveListings(list);
+                } else {
+                    const newItem = {
+                        id: nowId(),
+                        ...data,
+                        owner: state.currentUser.username,
+                        createdAt: Date.now()
+                    };
+                    list.push(newItem);
+                    saveListings(list);
+                }
+                closeModal();
+                renderListings();
+            };
+        }
+
+        // Show my listings - filter by owner
+        function showMyListings(){
+            const all = loadListings();
+            const mine = all.filter(x=> state.currentUser && x.owner === state.currentUser.username);
+            if(mine.length===0) alert('You have no listings yet.');
+            else renderListings(mine);
+        }
+
+        // Open listing detail
+        function openDetail(id){
+            const item = loadListings().find(x=>x.id===id);
+            if(!item) return alert('Listing not found');
+            showModal(modal=>{
+                modal.innerHTML = '<div class="row-between"><div style="font-weight:700">'+(item.title || 'Listing')+'</div><div class="small-muted">'+(CATEGORIES.find(c=>c.id===item.category)?.label || '')+'</div></div>';
+                const body = document.createElement('div');
+                body.style.marginTop='8px';
+                body.innerHTML = `
+                    <img src="${item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360"><rect width="100%" height="100%" fill="%23f3f6fa"/><text x="50%" y="50%" fill="%238b98a8" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24">No image</text></svg>'}" class="img-preview" />
+                    <div><strong>Price:</strong> ${item.price ? '৳ ' + item.price : 'N/A'}</div>
+                    <div style="margin-top:6px"><strong>Location:</strong> ${item.location || 'Unknown'}</div>
+                    <div style="margin-top:6px"><strong>Contact:</strong> ${item.contact || '—'}</div>
+                    <div style="margin-top:8px">${item.description ? escapeHtml(item.description).replace(/\n/g,'<br/>') : '<span class=small-muted>No description</span>'}</div>
+                    <div style="margin-top:10px" class="small-muted">Posted by ${item.owner} • ${new Date(item.createdAt).toLocaleString()}</div>
+                `;
+                modal.appendChild(body);
+
+                const actions = document.createElement('div');
+                actions.style.marginTop='12px';
+                actions.innerHTML = '<div style="display:flex;gap:8px"><button class="btn ghost" id="closeDetail">Close</button></div>';
+                modal.appendChild(actions);
+                modal.querySelector('#closeDetail').onclick = closeModal;
+
+                if(state.currentUser && state.currentUser.username === item.owner){
+                    const editBtn = document.createElement('button');
+                    editBtn.className='btn';
+                    editBtn.textContent='Edit';
+                    editBtn.onclick = ()=>{ closeModal(); openEditForm(item.id); };
+                    actions.querySelector('div').appendChild(editBtn);
+
+                    const delBtn = document.createElement('button');
+                    delBtn.className='btn ghost';
+                    delBtn.textContent='Delete';
+                    delBtn.onclick = ()=>{ closeModal(); deleteListing(item.id); };
+                    actions.querySelector('div').appendChild(delBtn);
+                }
+            });
+        }
+
+        // Delete listing
+        function deleteListing(id){
+            if(!confirm('Delete this listing?')) return;
+            const list = loadListings().filter(x=>x.id!==id);
+            saveListings(list);
+            renderListings();
+        }
+
+        // Modal system
+        function showModal(renderFn){
+            const root = el('modalRoot');
+            root.style.display = 'flex';
+            root.style.position = 'fixed';
+            root.style.inset = '0';
+            root.style.zIndex = 9999;
+            root.innerHTML = '';
+            const bg = document.createElement('div');
+            bg.className = 'modal-bg';
+            bg.onclick = (e)=>{ if(e.target === bg) closeModal(); };
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            bg.appendChild(modal);
+            root.appendChild(bg);
+
+            renderFn(modal);
+        }
+        function closeModal(){ const root = el('modalRoot'); root.innerHTML=''; root.style.display='none'; }
+
+        // Escape html in description
+        function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+        // Seed sample data (only first load)
+        (function maybeSeed(){
+            if(!localStorage.getItem(LISTINGS_KEY)){
+                const sample = [
+                    { id:nowId(), category:'tolet', title:'2-bedroom tolet near central station', location:'Dhaka, Gulshan', price:12000, contact:'0123456789', images:[], description:'Spacious 2BHK, near transport, utilities included sometimes. Contact for visit.', owner:'owner1', createdAt:Date.now()-1000*60*60*24*5 },
+                    { id:nowId(), category:'apartment', title:'3-storey apartment for sale', location:'Chittagong, Agrabad', price:7500000, contact:'017xxxxxxxx', images:[], description:'Good condition, 3 bedrooms, 2 bathrooms, modern kitchen.', owner:'seller1', createdAt:Date.now()-1000*60*60*24*10 },
+                    { id:nowId(), category:'land', title:'10 katha residential plot', location:'Gazipur', price:2500000, contact:'018xxxxxxxx', images:[], description:'Ready for construction, near main road.', owner:'landowner', createdAt:Date.now()-1000*60*60*24*20 },
+                    { id:nowId(), category:'coliving', title:'Coliving space for students', location:'Dhaka University Area', price:8000, contact:'015xxxxxxxx', images:[], description:'Shared rooms, utilities included, wifi available.', owner:'coliver', createdAt:Date.now()-1000*60*60*24*2 }
+                ];
+                saveListings(sample);
+            }
+        })();
+
+    </script>
+</body>
+</html>
